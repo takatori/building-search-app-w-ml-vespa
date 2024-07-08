@@ -1,0 +1,24 @@
+schema simplewiki {
+
+    document simplewiki {
+
+        field id type string {
+            indexing: summary | attribute
+            attribute: fast-search
+        }
+
+        field title type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+
+        field text type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+
+        field pageviews type int {
+            indexing: summary | attribute
+        }
+    }
+}

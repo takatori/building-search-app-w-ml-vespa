@@ -1,0 +1,53 @@
+[tool.poetry]
+name = "building-search-app-w-ml-vespa"
+version = "0.1.0"
+description = ""
+authors = ["Satoshi Takatori"]
+readme = "README.md"
+packages = [{include = "building_search_app_w_ml_vespa", from = "."}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pyvespa = "^0.45.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.5.1"
+pytest = "^8.2.2"
+pytest-cov = "^5.0.0"
+poethepoet = "^0.27.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tools.ruff]
+line-length = 200
+
+[tool.coverage.run]
+branch = true
+source = ["tests"]
+omit = ["tests/fixtures/*"]
+data_file = ".pytest_cache/.coverage"
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "def __str__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "if typing.TYPE_CHECKING:",
+]
+
+[tool.coverage.xml]
+output = ".pytest_cache/coverage.xml"
+
+[tool.poe.tasks]
+lint = "ruff check feed-master-db"
+test = "pytest"
+cover = "pytest --cov=mymodule --cov-report xml"
+fmt = "black feed-master-db --check"
+build = ["fmt", "lint", "test"]
+feed = "python feed-master-db/feed_dump_to_vespa.py"

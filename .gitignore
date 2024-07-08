@@ -1,0 +1,8 @@
+.venv
+.git
+.idea
+.mypy_cache
+.bin/**
+!.bin/.gitkeep
+**/.ipynb_checkpoints
+**/__pycache__
