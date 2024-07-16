@@ -35,7 +35,3 @@ def callback(response, id):
     
 for buf in generate_bulk_buffer():
     client.feed_iterable(buf, schema = "simplewiki", callback=callback)
-
-
-    
-    

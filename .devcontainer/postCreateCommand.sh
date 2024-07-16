@@ -18,6 +18,6 @@ rm -rf .bin/vespa-cli_${VESPA_CLI_VERSION}_linux_amd64
 
 vespa config set target http://vespa:19071
 vespa status
-vespa deploy vespa-config --wait 300
+vespa deploy vespa-config --wait 30
 
 echo "FINISH Install"
