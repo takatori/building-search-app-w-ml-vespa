@@ -15,14 +15,15 @@ from vespa_query import (
 
 
 def parse_response(response):
-    titles = [d["_source"]["title"] for d in response["hits"]["hits"]]
-    features = [
-        d["fields"]["_ltrlog"][0]["log_entry0"] if "fields" in d else None
-        for d in response["hits"]["hits"]
-    ]
-    hits = response["hits"]["total"]["value"]
-    took = response["took"]
-    return titles, features, hits, took
+    titles = [hit["fields"]["title"] for hit in response.hits]
+    # features = [
+    # d["fields"]["_ltrlog"][0]["log_entry0"] if "fields" in d else None
+    # for d in response["hits"]["hits"]
+    # ]
+    # hits = response["hits"]["total"]["value"]
+    # took = response["took"]
+    # return titles, features, hits, took
+    return titles
 
 
 parser = ArgumentParser()
@@ -59,9 +60,10 @@ with open(args.keywords_path) as f, open(args.output_path, "w") as of, open(
         body = generate_query_func(keywords, **extra_query_params)
         try:
             response = session.query(body=body)
-            print(response.get_json())
-
+            # print(response.hits)
             # titles, features, hits, took = parse_response(response)
+            titles = parse_response(response)
+            print(titles)
             # labels = [int(title == keywords) for title in titles]
             # # target == featureのとき、label種類が2つ以上あるリクエストのみを結果に出力する
             # if args.target == "feature" and len(set(labels)) < 2:
