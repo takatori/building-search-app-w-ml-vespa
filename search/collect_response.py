@@ -20,10 +20,15 @@ def parse_response(response):
     # d["fields"]["_ltrlog"][0]["log_entry0"] if "fields" in d else None
     # for d in response["hits"]["hits"]
     # ]
-    # hits = response["hits"]["total"]["value"]
-    # took = response["took"]
-    # return titles, features, hits, took
-    return titles
+    features = [None for hit in response.hits]
+    r = response.json
+    hits = r["root"]["fields"]["totalCount"]
+    took = (
+        r["timing"]["querytime"]
+        + r["timing"]["summaryfetchtime"]
+        + r["timing"]["searchtime"]
+    )
+    return titles, features, hits, took
 
 
 parser = ArgumentParser()
@@ -60,26 +65,23 @@ with open(args.keywords_path) as f, open(args.output_path, "w") as of, open(
         body = generate_query_func(keywords, **extra_query_params)
         try:
             response = session.query(body=body)
-            # print(response.hits)
-            # titles, features, hits, took = parse_response(response)
-            titles = parse_response(response)
-            print(titles)
-            # labels = [int(title == keywords) for title in titles]
-            # # target == featureのとき、label種類が2つ以上あるリクエストのみを結果に出力する
-            # if args.target == "feature" and len(set(labels)) < 2:
-            #     continue
-            # # --extract-hits-and-tookが指定されているとき: hitsとtookを空白区切りで出力する
-            # if args.extract_hits_and_took:
-            #     of.write(f"{hits} {took}\n")
-            # # それ以外: labelとfeature情報（レスポンスに存在する場合のみ）を空白区切りで出力する
-            # else:
-            #     for label, feature in zip(labels, features):
-            #         tokens = []
-            #         tokens.append(str(label))
-            #         if feature is not None:
-            #             for i, f in enumerate(feature):
-            #                 tokens.append(f"{i}:{f['value']}")
-            #         of.write(f"{' '.join(tokens)}\n")
-            # gf.write(f"{len(titles)}\n")
+            titles, features, hits, took = parse_response(response)
+            labels = [int(title == keywords) for title in titles]
+            # target == featureのとき、label種類が2つ以上あるリクエストのみを結果に出力する
+            if args.target == "feature" and len(set(labels)) < 2:
+                continue
+            # --extract-hits-and-tookが指定されているとき: hitsとtookを空白区切りで出力する
+            if args.extract_hits_and_took:
+                of.write(f"{hits} {took}\n")
+            # それ以外: labelとfeature情報（レスポンスに存在する場合のみ）を空白区切りで出力する
+            else:
+                for label, feature in zip(labels, features):
+                    tokens = []
+                    tokens.append(str(label))
+                    if feature is not None:
+                        for i, f in enumerate(feature):
+                            tokens.append(f"{i}:{f['value']}")
+                    of.write(f"{' '.join(tokens)}\n")
+            gf.write(f"{len(titles)}\n")
         except Exception:
             continue  # ハンズオンなので何かしらで例外が発生した場合は無視する

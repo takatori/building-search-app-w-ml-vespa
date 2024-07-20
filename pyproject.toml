@@ -9,6 +9,7 @@ packages = [{include = "building_search_app_w_ml_vespa", from = "."}]
 [tool.poetry.dependencies]
 python = "^3.12"
 pyvespa = "^0.45.0"
+scikit-learn = "^1.5.1"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.5.1"
