@@ -20,7 +20,6 @@ with open(args.input + ".group") as gf, open(args.input) as f:
         while len(y_true) < args.at:  # Padding
             y_true.append(0)
         score = ndcg_score([y_true], [[-i for i in range(len(y_true))]], k=args.at)
-        print(score)
         scores.append(score)
 
 print("Average nDCG Score:")

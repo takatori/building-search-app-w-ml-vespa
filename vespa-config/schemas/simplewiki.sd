@@ -21,4 +21,8 @@ schema simplewiki {
             indexing: summary | attribute
         }
     }
+
+    fieldset default {
+        fields: text
+    }
 }
