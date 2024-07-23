@@ -52,3 +52,41 @@ cover = "pytest --cov=mymodule --cov-report xml"
 fmt = "black feed-master-db --check"
 build = ["fmt", "lint", "test"]
 feed = "python feed-master-db/feed_dump_to_vespa.py"
+
+[tool.poe.tasks.prepare_keywords]
+shell = """
+bzcat dataset/simplewiki-202109-pages-with-pageviews-20211001.bz2 | \
+cut -f2 | \
+shuf -n 4000 --random-source=dataset/simplewiki-202109-pages-with-pageviews-20211001.bz2 \
+> tmp/hand_on_keywords.txt
+"""
+
+[tool.poe.tasks.prepare_test_keywords]
+shell = """
+cat tmp/hand_on_keywords.txt | awk 'NR==1,NR==500 {print}' > tmp/hands_on_keywords.txt.test
+"""
+
+[tool.poe.tasks.prepare_test_training]
+shell = """
+cat tmp/hand_on_keywords.txt | awk 'NR==501,NR==3500 {print}' > tmp/hands_on_keywords.txt.training
+"""
+
+[tool.poe.tasks.prepare_test_validation]
+shell = """
+cat tmp/hand_on_keywords.txt | awk 'NR==3501,NR==4000 {print}' > tmp/hands_on_keywords.txt.valiation
+"""
+
+[tool.poe.tasks.collect_response]
+shell = """
+./search/collect_response.py baseline tmp/baseline.txt tmp/hands_on_keywords.txt.test
+"""
+
+[tool.poe.tasks.collect_fetures]
+shell = """
+./search/collect_response.py feature tmp/baseline.txt tmp/hands_on_keywords.txt.test
+"""
+
+[tool.poe.tasks.calc_ndcg]
+shell = """
+./saerch/calc_ndcg.py tmp/baseline.txt
+"""

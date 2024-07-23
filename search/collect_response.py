@@ -15,12 +15,11 @@ from vespa_query import (
 
 
 def parse_response(response):
-    titles = [hit["fields"]["title"] for hit in response.hits]
-    # features = [
-    # d["fields"]["_ltrlog"][0]["log_entry0"] if "fields" in d else None
-    # for d in response["hits"]["hits"]
-    # ]
-    features = [None for hit in response.hits]
+    response_hits = dict(response.hits)
+    titles = [hit["fields"]["title"] for hit in response_hits]
+    features = [hit["fields"]["summaryfeatures"] for hit in response_hits]
+
+    print(titles)
     r = response.json
     hits = r["root"]["fields"]["totalCount"]
     took = (
@@ -28,6 +27,7 @@ def parse_response(response):
         + r["timing"]["summaryfetchtime"]
         + r["timing"]["searchtime"]
     )
+
     return titles, features, hits, took
 
 
@@ -68,6 +68,7 @@ with open(args.keywords_path) as f, open(args.output_path, "w") as of, open(
             titles, features, hits, took = parse_response(response)
             labels = [int(title == keywords) for title in titles]
             # target == featureのとき、label種類が2つ以上あるリクエストのみを結果に出力する
+            # すべての関連度が等しい場合、関連度の順序関係を学習するランキング学習が適用できないため
             if args.target == "feature" and len(set(labels)) < 2:
                 continue
             # --extract-hits-and-tookが指定されているとき: hitsとtookを空白区切りで出力する
@@ -79,8 +80,10 @@ with open(args.keywords_path) as f, open(args.output_path, "w") as of, open(
                     tokens = []
                     tokens.append(str(label))
                     if feature is not None:
-                        for i, f in enumerate(feature):
-                            tokens.append(f"{i}:{f['value']}")
+                        for i, (feature_name, feature_value) in enumerate(
+                            feature.items()
+                        ):
+                            tokens.append(f"{i}:{feature_value}")
                     of.write(f"{' '.join(tokens)}\n")
             gf.write(f"{len(titles)}\n")
         except Exception:
