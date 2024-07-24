@@ -15,11 +15,8 @@ from vespa_query import (
 
 
 def parse_response(response):
-    response_hits = dict(response.hits)
-    titles = [hit["fields"]["title"] for hit in response_hits]
-    features = [hit["fields"]["summaryfeatures"] for hit in response_hits]
-
-    print(titles)
+    titles = [hit["fields"]["title"] for hit in response.hits]
+    features = [hit["fields"].get("summaryfeatures", None) for hit in response.hits]
     r = response.json
     hits = r["root"]["fields"]["totalCount"]
     took = (

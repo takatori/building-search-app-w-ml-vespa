@@ -73,7 +73,7 @@ cat tmp/hand_on_keywords.txt | awk 'NR==501,NR==3500 {print}' > tmp/hands_on_key
 
 [tool.poe.tasks.prepare_test_validation]
 shell = """
-cat tmp/hand_on_keywords.txt | awk 'NR==3501,NR==4000 {print}' > tmp/hands_on_keywords.txt.valiation
+cat tmp/hand_on_keywords.txt | awk 'NR==3501,NR==4000 {print}' > tmp/hands_on_keywords.txt.validation
 """
 
 [tool.poe.tasks.collect_response]
@@ -81,12 +81,17 @@ shell = """
 ./search/collect_response.py baseline tmp/baseline.txt tmp/hands_on_keywords.txt.test
 """
 
-[tool.poe.tasks.collect_fetures]
+[tool.poe.tasks.collect_features_training]
 shell = """
-./search/collect_response.py feature tmp/baseline.txt tmp/hands_on_keywords.txt.test
+./search/collect_response.py feature tmp/hands_on_featuredata.txt.training tmp/hands_on_keywords.txt.training
+"""
+
+[tool.poe.tasks.collect_features_validation]
+shell = """
+./search/collect_response.py feature tmp/hands_on_featuredata.txt.validation tmp/hands_on_keywords.txt.validation
 """
 
 [tool.poe.tasks.calc_ndcg]
 shell = """
-./saerch/calc_ndcg.py tmp/baseline.txt
+./search/calc_ndcg.py tmp/baseline.txt
 """
