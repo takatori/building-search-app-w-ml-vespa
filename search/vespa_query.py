@@ -24,7 +24,7 @@ def generate_query_to_search_with_mlr(keywords, size=10, window_size=100):
         "userinput": keywords,
         "ranking": {
             "profile": "xgboost",
-            "rerank-count": window_size,
+            "rerankCount": window_size,
         },
         "hits": size,
         "presentation.timing": True,
