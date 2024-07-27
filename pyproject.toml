@@ -92,9 +92,19 @@ shell = """
 ./search/collect_response.py feature tmp/hands_on_featuredata.txt.validation tmp/hands_on_keywords.txt.validation
 """
 
+[tool.poe.tasks.collect_mlr]
+shell = """
+./search/collect_response.py mlr tmp/mlr.txt tmp/hands_on_keywords.txt.test
+"""
+
 [tool.poe.tasks.calc_ndcg]
 shell = """
 ./search/calc_ndcg.py tmp/baseline.txt
+"""
+
+[tool.poe.tasks.calc_ndcg_mlr]
+shell = """
+./search/calc_ndcg.py tmp/mlr.txt
 """
 
 [tool.poe.tasks.generate_model]

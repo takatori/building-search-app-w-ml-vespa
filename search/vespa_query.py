@@ -18,5 +18,14 @@ def generate_query_to_collect_features(keywords, size=10):
     }
 
 
-def generate_query_to_search_with_mlr(keywords, size=10):
-    return {}
+def generate_query_to_search_with_mlr(keywords, size=10, window_size=100):
+    return {
+        "yql": "select title from simplewiki where userInput(@userinput)",
+        "userinput": keywords,
+        "ranking": {
+            "profile": "xgboost",
+            "rerank-count": window_size,
+        },
+        "hits": size,
+        "presentation.timing": True,
+    }

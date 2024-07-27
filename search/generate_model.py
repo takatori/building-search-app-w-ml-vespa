@@ -8,7 +8,7 @@ from xgboost import DMatrix, train
 feature_names = [
     "queryTermCount",
     "nativeRank",
-    "pageviews",
+    "attribute(pageviews)",
     "vespa.summaryFeatures.cached",
 ]
 
@@ -21,16 +21,18 @@ params = {
     "grow_policy": "lossguide",
     "max_leaves": 60,
     "subsample": 0.45,
+    "eta": 0.1,
+    "seed": 0,
 }
 
 # 訓練データセット
 training_input = DMatrix(
-    "tmp/hands_on_featuredata.txt.training", feature_names=feature_names
+    "tmp/hands_on_featuredata.txt.training?format=libsvm", feature_names=feature_names
 )
 
 # 検証データセット
 validation_input = DMatrix(
-    "tmp/hands_on_featuredata.txt.validation", feature_names=feature_names
+    "tmp/hands_on_featuredata.txt.validation?format=libsvm", feature_names=feature_names
 )
 
 # モデルの学習
@@ -38,15 +40,16 @@ evals = [(training_input, "train"), (validation_input, "valid")]
 bst = train(
     params,
     training_input,
-    num_boost_round=1000,
+    num_boost_round=200,
     evals=evals,
-    # early_stopping_rounds=50,
+    early_stopping_rounds=50,
     verbose_eval=10,
 )
 
 # モデルの出力
-model = bst.get_dump(dump_format="json")
-
-
-with open("tmp/hands_on_model.json", "w") as f:
-    json.dump(model, f)
+bst.dump_model(
+    "tmp/hands_on_model.json",
+    # fmap="tmp/feature-map.txt",
+    with_stats=False,
+    dump_format="json",
+)
