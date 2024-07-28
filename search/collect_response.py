@@ -4,8 +4,6 @@ import warnings
 
 from argparse import ArgumentParser
 from vespa.application import Vespa
-from vespa.io import VespaQueryResponse
-from vespa.exceptions import VespaError
 
 from vespa_query import (
     generate_query_to_search_with_default,
