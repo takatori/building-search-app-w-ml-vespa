@@ -78,7 +78,7 @@ shell = """
 cat tmp/hand_on_keywords.txt | awk 'NR==3501,NR==4000 {print}' > tmp/hands_on_keywords.txt.validation
 """
 
-[tool.poe.tasks.collect_response]
+[tool.poe.tasks.collect_baseline]
 shell = """
 ./search/collect_response.py baseline tmp/baseline.txt tmp/hands_on_keywords.txt.test
 """
@@ -98,6 +98,16 @@ shell = """
 ./search/collect_response.py mlr tmp/mlr.txt tmp/hands_on_keywords.txt.test
 """
 
+[tool.poe.tasks.collect_baseline_latency]
+shell = """
+./search/collect_response.py baseline --extract-hits-and-took tmp/benchmark-baseline.txt tmp/hands_on_keywords.txt.test
+"""
+
+[tool.poe.tasks.collect_mlr_latency]
+shell = """
+./search/collect_response.py mlr --extract-hits-and-took tmp/benchmark-mlr.txt tmp/hands_on_keywords.txt.test
+"""
+
 [tool.poe.tasks.calc_ndcg]
 shell = """
 ./search/calc_ndcg.py tmp/baseline.txt
@@ -107,6 +117,17 @@ shell = """
 shell = """
 ./search/calc_ndcg.py tmp/mlr.txt
 """
+
+[tool.poe.tasks.calc_took]
+shell = """
+./search/calc_took.py tmp/benchmark-baseline.txt
+"""
+
+[tool.poe.tasks.calc_took_mlr]
+shell = """
+./search/calc_took.py tmp/benchmark-mlr.txt
+"""
+
 
 [tool.poe.tasks.generate_model]
 shell = """
