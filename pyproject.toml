@@ -112,3 +112,9 @@ shell = """
 shell = """
 ./search/generate_model.py
 """
+
+
+[tool.poe.tasks.run_ui]
+shell = """ 
+streamlit run search/app.py
+"""
